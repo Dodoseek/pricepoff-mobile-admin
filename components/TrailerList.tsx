@@ -59,6 +59,5 @@ export default function TrailerList() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
-    gap: 10,
   },
 });

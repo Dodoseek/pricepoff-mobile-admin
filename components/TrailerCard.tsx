@@ -28,7 +28,7 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
           {trailer.status === "RESERVED" && <View style={styles.yellow} />}
           {trailer.status === "UNAVAILABLE" && <View style={styles.red} />}
         </View>
-        <Text variant="bodySmall">Цена: от {trailer.price_1}</Text>
+        <Text variant="bodySmall">Цена: от {trailer.price_3} рублей</Text>
       </Card.Content>
       <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
       <Card.Actions>
@@ -41,6 +41,8 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
 const styles = StyleSheet.create({
   statusBox: {
     display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   textDesc: {
     textAlign: "justify",
@@ -64,6 +66,6 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
   },
   card: {
-    marginBottom: 20,
+    marginVertical: 20,
   },
 });
