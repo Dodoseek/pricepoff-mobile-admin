@@ -1,45 +1,65 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 
-import { Avatar, Button, Card, Text } from "react-native-paper";
-
-const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
+import { Button, Card, Text, Avatar, useTheme } from "react-native-paper";
 
 export default function TrailerCard({ trailer }: { trailer: Trailer }) {
+  const theme = useTheme();
+
+  const getStatus = () => {
+    switch (trailer.status.toUpperCase()) {
+      case "AVAILABLE":
+        return (
+          <>
+            <Text>В наличии</Text>
+            <Avatar.Icon style={styles.indicator} size={14} icon="check" />
+          </>
+        );
+      case "RESERVED":
+        return (
+          <>
+            <Text>Отсутствует</Text>
+            <Avatar.Icon style={styles.indicator} size={24} icon="lock" />
+          </>
+        );
+      case "UNAVAILABLE":
+        return (
+          <>
+            <Text>Отсутствует</Text>
+            <Avatar.Icon style={styles.indicator} size={24} icon="close-box" />
+          </>
+        );
+    }
+  };
+
   return (
     <Card style={styles.card}>
-      <Card.Title
-        title={trailer.name}
-        subtitle={trailer.color}
-        left={LeftContent}
+      <Card.Cover
+        style={[
+          styles.cover,
+          { borderTopLeftRadius: 15, borderTopRightRadius: 15 },
+        ]}
+        source={{ uri: "https://picsum.photos/700" }}
       />
-      <Card.Content>
-        <Text
-          ellipsizeMode="tail"
-          numberOfLines={3}
-          style={styles.textDesc}
-          variant="bodyMedium"
-        >
-          {trailer.description}
-        </Text>
-        <View style={styles.statusBox}>
-          <Text>Статус:</Text>
-          {trailer.status.toUpperCase() === "AVAILABLE" && (
-            <View style={styles.green} />
-          )}
-          {trailer.status.toUpperCase() === "RESERVED" && (
-            <View style={styles.yellow} />
-          )}
-          {trailer.status.toUpperCase() === "UNAVAILABLE" && (
-            <View style={styles.red} />
-          )}
+      <Card.Title title={trailer.name} />
+      <Card.Content style={{ marginBottom: 20 }}>
+        <View style={[styles.statusBox, { marginBottom: 10 }]}>
+          {getStatus()}
         </View>
-        <Text variant="bodySmall">Цена: от {trailer.price_3} рублей</Text>
+        <Text>Цена: от {trailer.price_3} рублей</Text>
       </Card.Content>
-      <Card.Cover source={{ uri: "https://picsum.photos/700" }} />
-      <Card.Actions>
-        <Button>Смотреть больше</Button>
-      </Card.Actions>
+      <Button
+        labelStyle={{ color: "white" }}
+        style={{
+          backgroundColor: theme.colors.primary,
+          borderBottomLeftRadius: 15,
+          borderBottomRightRadius: 15,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+        }}
+      >
+        Смотреть больше
+      </Button>
     </Card>
   );
 }
@@ -50,28 +70,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  textDesc: {
-    textAlign: "justify",
-  },
-  red: {
-    width: 15,
-    height: 15,
-    backgroundColor: "red",
-    borderRadius: "50%",
-  },
-  green: {
-    width: 15,
-    height: 15,
-    backgroundColor: "green",
-    borderRadius: "50%",
-  },
-  yellow: {
-    width: 15,
-    height: 15,
-    backgroundColor: "yellow",
-    borderRadius: "50%",
+  indicator: {
+    marginLeft: 5,
   },
   card: {
-    marginVertical: 20,
+    marginVertical: 10,
+    width: "100%",
+    borderRadius: 15,
+  },
+  cover: {
+    borderRadius: 0,
   },
 });

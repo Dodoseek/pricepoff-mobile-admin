@@ -1,14 +1,23 @@
+import React, { useState, useCallback } from "react";
 import { useGetTrailersQuery } from "@/api/trailerApi";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import TrailerCard from "./TrailerCard";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
-
-import { Text } from "react-native-paper";
+import { ActivityIndicator, MD2Colors, Text } from "react-native-paper";
 
 export default function TrailerList() {
-  const { data = [], isLoading } = useGetTrailersQuery();
+  const { data = [], isLoading, refetch } = useGetTrailersQuery();
+  const [refreshing, setRefreshing] = useState(false);
 
-  if (isLoading) {
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
+  if (isLoading && !refreshing) {
     return <ActivityIndicator animating={true} color={MD2Colors.red800} />;
   }
 
@@ -17,9 +26,14 @@ export default function TrailerList() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View>
-        {data?.map((trailer) => (
+        {data.map((trailer) => (
           <TrailerCard key={trailer.id} trailer={trailer} />
         ))}
       </View>
@@ -30,5 +44,6 @@ export default function TrailerList() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
+    width: "100%",
   },
 });
