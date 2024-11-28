@@ -3,6 +3,8 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
+import { Provider } from "react-redux";
+import { store } from "@/store";
 
 const theme = {
   ...DefaultTheme,
@@ -15,8 +17,10 @@ const theme = {
 
 export default function RootLayout() {
   return (
-    <PaperProvider theme={theme}>
-      <Stack />
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider theme={theme}>
+        <Stack />
+      </PaperProvider>
+    </Provider>
   );
 }

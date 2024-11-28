@@ -1,4 +1,4 @@
-type TrailerStatus = "AVAILABLE" | "RESERVED" | "UNAVAILABLE";
+type TrailerStatus = "available" | "reserved" | "unavailable";
 
 interface Trailer {
   id: number;

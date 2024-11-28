@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import React from "react";
 
 import { Avatar, Button, Card, Text } from "react-native-paper";
 
@@ -24,9 +24,15 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
         </Text>
         <View style={styles.statusBox}>
           <Text>Статус:</Text>
-          {trailer.status === "AVAILABLE" && <View style={styles.green} />}
-          {trailer.status === "RESERVED" && <View style={styles.yellow} />}
-          {trailer.status === "UNAVAILABLE" && <View style={styles.red} />}
+          {trailer.status.toUpperCase() === "AVAILABLE" && (
+            <View style={styles.green} />
+          )}
+          {trailer.status.toUpperCase() === "RESERVED" && (
+            <View style={styles.yellow} />
+          )}
+          {trailer.status.toUpperCase() === "UNAVAILABLE" && (
+            <View style={styles.red} />
+          )}
         </View>
         <Text variant="bodySmall">Цена: от {trailer.price_3} рублей</Text>
       </Card.Content>
