@@ -1,11 +1,19 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export const trailerApi = createApi({
-  reducerPath: "trailerApi",
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_BASE_API_URL }),
+import { api } from "@/api/api";
+// TODO: Разобраться с providesTags и invalidatesTags
+const extendedApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getTrailers: builder.query<Trailer[], void>({
       query: () => "trailers",
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "Trailers" as const,
+                id: id,
+              })),
+              { type: "Trailers" },
+            ]
+          : ["Trailers"],
       async onCacheEntryAdded(
         arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
@@ -38,6 +46,7 @@ export const trailerApi = createApi({
       },
     }),
   }),
+  overrideExisting: false,
 });
 
-export const { useGetTrailersQuery } = trailerApi;
+export const { useGetTrailersQuery } = extendedApi;

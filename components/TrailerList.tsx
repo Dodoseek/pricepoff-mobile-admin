@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { useGetTrailersQuery } from "@/api/trailerApi";
+import { useGetTrailersQuery } from "@/api/trailersApi";
 import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import TrailerCard from "./TrailerCard";
 import { ActivityIndicator, MD2Colors, Text } from "react-native-paper";

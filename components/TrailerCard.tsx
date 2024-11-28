@@ -1,10 +1,12 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
+import { useRouter } from "expo-router";
 
 import { Button, Card, Text, Avatar, useTheme } from "react-native-paper";
 
 export default function TrailerCard({ trailer }: { trailer: Trailer }) {
   const theme = useTheme();
+  const router = useRouter();
 
   const getStatus = () => {
     switch (trailer.status.toUpperCase()) {
@@ -46,9 +48,15 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
         <View style={[styles.statusBox, { marginBottom: 10 }]}>
           {getStatus()}
         </View>
-        <Text>Цена: от {trailer.price_3} рублей</Text>
+        <Text>Цена: от {trailer.price_3} ₽/сутки</Text>
       </Card.Content>
       <Button
+        onPress={() =>
+          router.push({
+            pathname: "/details/[id]",
+            params: { id: trailer.id },
+          })
+        }
         labelStyle={{ color: "white" }}
         style={{
           backgroundColor: theme.colors.primary,
