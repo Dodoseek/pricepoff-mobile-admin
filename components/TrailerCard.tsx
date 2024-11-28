@@ -14,21 +14,29 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
         return (
           <>
             <Text>В наличии</Text>
-            <Avatar.Icon style={styles.indicator} size={14} icon="check" />
+            <Avatar.Icon
+              style={[styles.indicator, { backgroundColor: "green" }]}
+              size={14}
+              icon="check"
+            />
           </>
         );
       case "RESERVED":
         return (
           <>
-            <Text>Отсутствует</Text>
-            <Avatar.Icon style={styles.indicator} size={24} icon="lock" />
+            <Text>Зарезервирован</Text>
+            <Avatar.Icon style={styles.indicator} size={14} icon="lock" />
           </>
         );
       case "UNAVAILABLE":
         return (
           <>
             <Text>Отсутствует</Text>
-            <Avatar.Icon style={styles.indicator} size={24} icon="close-box" />
+            <Avatar.Icon
+              style={[styles.indicator, { backgroundColor: "red" }]}
+              size={14}
+              icon="close-box"
+            />
           </>
         );
     }
