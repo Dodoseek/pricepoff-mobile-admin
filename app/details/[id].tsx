@@ -13,6 +13,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useRefresh } from "@/hooks/useRefresh";
 import FormInput from "@/components/forms/FormInput";
 import FormSelect from "@/components/forms/FormSelect";
+import FormDatePicker from "@/components/forms/FormDatePicker";
 
 type TrailerFormInputs = yup.InferType<typeof trailerSchema>;
 
@@ -24,6 +25,7 @@ export default function TrailerForm() {
 
   const methods = useForm<TrailerFormInputs>({
     resolver: yupResolver(trailerSchema),
+    mode: "onSubmit",
   });
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function TrailerForm() {
       if (selectedTrailer) {
         setTrailer(selectedTrailer);
         methods.reset({
+          id: id as string,
           name: selectedTrailer.name,
           description: selectedTrailer.description,
           height: selectedTrailer.height,
@@ -55,6 +58,7 @@ export default function TrailerForm() {
   const [updateTrailer, { isLoading }] = useUpdateTrailerMutation();
 
   const onSubmit = async (data: TrailerFormInputs) => {
+    console.error(data);
     try {
       await updateTrailer({ id: trailer!.id, ...data } as Trailer).unwrap();
       alert("Данные успешно обновлены!");
@@ -69,7 +73,7 @@ export default function TrailerForm() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        style={styles.container}
+        style={[styles.container, { paddingTop: 16 }]}
       >
         <Stack.Screen
           options={{
@@ -86,19 +90,44 @@ export default function TrailerForm() {
           ]}
         />
         <FormInput name="name" label="Название" />
-        <FormInput name="height" label="Высота прицепа (в мм)" />
-        <FormInput name="width" label="Ширина прицепа (в мм)" />
-        {/* <FormInput name="year_of_production" label="Год выпуска" /> */}
+        <FormInput
+          name="height"
+          label="Высота прицепа (в мм)"
+          keyboardType="numeric"
+        />
+        <FormInput
+          name="width"
+          label="Ширина прицепа (в мм)"
+          keyboardType="numeric"
+        />
+        <FormDatePicker name="year_of_production" label="Год выпуска" />
         <FormInput name="color" label="Цвет прицепа" />
-        <FormInput name="max_weight" label="Максимальная масса (кг)" />
+        <FormInput
+          name="max_weight"
+          label="Максимальная масса (кг)"
+          keyboardType="numeric"
+        />
         <FormInput
           name="curb_weight"
           label="Масса в снаряженном состоянии (кг)"
+          keyboardType="numeric"
         />
-        <FormInput name="deposit" label="Залог (₽)" />
-        <FormInput name="price_1" label="Цена от 1 до 2 суток (₽)" />
-        <FormInput name="price_2" label="Цена от 3 до 6 суток (₽)" />
-        <FormInput name="price_3" label="Цена от 7 суток (₽)" />
+        <FormInput name="deposit" label="Залог (₽)" keyboardType="numeric" />
+        <FormInput
+          name="price_1"
+          label="Цена от 1 до 2 суток (₽)"
+          keyboardType="numeric"
+        />
+        <FormInput
+          name="price_2"
+          label="Цена от 3 до 6 суток (₽)"
+          keyboardType="numeric"
+        />
+        <FormInput
+          name="price_3"
+          label="Цена от 7 суток (₽)"
+          keyboardType="numeric"
+        />
         <FormInput name="description" label="Описание" multiline={true} />
         <Button
           mode="contained"
@@ -115,13 +144,15 @@ export default function TrailerForm() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 10,
+    display: "flex",
   },
   error: {
     color: "red",
     fontSize: 12,
   },
   button: {
-    marginTop: 16,
+    marginVertical: 32,
+    borderRadius: 10,
   },
 });

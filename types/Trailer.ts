@@ -1,7 +1,7 @@
 type TrailerStatus = "available" | "reserved" | "unavailable";
 
 interface Trailer {
-  id: number;
+  id: string;
   name: string;
   description: string;
   height: number;

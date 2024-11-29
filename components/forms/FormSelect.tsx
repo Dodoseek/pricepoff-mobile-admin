@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useFormContext, Controller } from "react-hook-form";
-import { Menu, Button, useTheme } from "react-native-paper";
+import { Menu, Button, useTheme, HelperText } from "react-native-paper";
 
 interface FormSelectProps {
   name: string;
@@ -37,9 +37,11 @@ const FormSelect: React.FC<FormSelectProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-
+    <View
+      style={{
+        marginVertical: 4,
+      }}
+    >
       <Controller
         name={name}
         control={control}
@@ -66,6 +68,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
                       },
                     ]}
                   >
+                    <Text style={styles.label}>{label}</Text>
                     <Text style={[styles.inputText]}>
                       {selectedValue
                         ? options.find(
@@ -107,19 +110,18 @@ const FormSelect: React.FC<FormSelectProps> = ({
         )}
       />
       {errors[name] && (
-        <Text style={styles.error}>{errors[name]?.message as string}</Text>
+        <HelperText type="error" visible={!!errors[name]}>
+          {errors[name]?.message as string}
+        </HelperText>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
   label: {
-    marginBottom: 4,
-    fontSize: 16,
+    color: "#696969",
+    fontSize: 12,
   },
   input: {
     backgroundColor: "white",

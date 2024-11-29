@@ -1,6 +1,6 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { TextInput, Text, useTheme } from "react-native-paper";
+import { TextInput, Text, useTheme, HelperText } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 
 interface FormInputProps {
@@ -23,14 +23,20 @@ const FormInput: React.FC<FormInputProps> = ({
   } = useFormContext();
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        marginVertical: 4,
+      }}
+    >
       <Controller
         name={name}
         control={control}
         render={({ field: { onChange, value } }) => (
           <TextInput
             label={label}
-            value={value ? value.toString() : ""}
+            value={
+              value !== undefined && value !== null ? value.toString() : ""
+            }
             keyboardType={keyboardType}
             onChangeText={onChange}
             error={!!errors[name]}
@@ -42,14 +48,15 @@ const FormInput: React.FC<FormInputProps> = ({
         )}
       />
       {errors[name] && (
-        <Text style={styles.error}>{errors[name]?.message as string}</Text>
+        <HelperText type="error" visible={!!errors[name]}>
+          {errors[name]?.message as string}
+        </HelperText>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 16 },
   input: { backgroundColor: "white" },
   error: { color: "red", fontSize: 12 },
 });

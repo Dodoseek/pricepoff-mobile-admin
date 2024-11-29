@@ -46,10 +46,10 @@ const extendedApi = api.injectEndpoints({
       },
     }),
     updateTrailer: builder.mutation<void, Trailer>({
-      query: ({ id, ...data }) => ({
-        url: `trailers/${id}`,
+      query: (trailer) => ({
+        url: `trailers/${trailer.id}`,
         method: "PUT",
-        body: data,
+        body: trailer,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Trailers", id }],
     }),

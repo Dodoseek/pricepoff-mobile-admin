@@ -1,6 +1,7 @@
 import * as yup from "yup";
 
-export const trailerSchema = yup.object({
+export const trailerSchema = yup.object().shape({
+  id: yup.string().notRequired().nullable(),
   name: yup
     .string()
     .max(200, "Название слишком длинное")
