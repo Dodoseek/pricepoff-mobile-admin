@@ -35,7 +35,7 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
             <Avatar.Icon
               style={[styles.indicator, { backgroundColor: "red" }]}
               size={14}
-              icon="close-box"
+              icon="close"
             />
           </>
         );
