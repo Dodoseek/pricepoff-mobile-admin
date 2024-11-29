@@ -1,212 +1,122 @@
 import React, { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button } from "react-native-paper";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import { useLocalSearchParams, Stack } from "expo-router";
-import { useGetTrailersQuery } from "@/api/trailersApi";
+  useGetTrailersQuery,
+  useUpdateTrailerMutation,
+} from "@/api/trailersApi";
+import { trailerSchema } from "@/schemas/TrailerSchema";
+import * as yup from "yup";
+import { useLocalSearchParams } from "expo-router";
+import { useRefresh } from "@/hooks/useRefresh";
+import FormInput from "@/components/forms/FormInput";
+import FormSelect from "@/components/forms/FormSelect";
 
-export default function TrailerDetails() {
+type TrailerFormInputs = yup.InferType<typeof trailerSchema>;
+
+export default function TrailerForm() {
+  const { data = [], isLoading: isLoadingGet, refetch } = useGetTrailersQuery();
+  const { refreshing, onRefresh } = useRefresh(refetch);
   const { id } = useLocalSearchParams();
-  const { data = [], isLoading } = useGetTrailersQuery();
   const [trailer, setTrailer] = useState<Trailer | null>(null);
+
+  const methods = useForm<TrailerFormInputs>({
+    resolver: yupResolver(trailerSchema),
+  });
 
   useEffect(() => {
     if (data.length > 0) {
       const selectedTrailer = data.find(
         (trailer) => trailer.id.toString() === id
       );
-      selectedTrailer && setTrailer(selectedTrailer);
+      if (selectedTrailer) {
+        setTrailer(selectedTrailer);
+        methods.reset({
+          name: selectedTrailer.name,
+          description: selectedTrailer.description,
+          height: selectedTrailer.height,
+          width: selectedTrailer.width,
+          year_of_production: new Date(selectedTrailer.year_of_production),
+          color: selectedTrailer.color,
+          max_weight: selectedTrailer.max_weight,
+          curb_weight: selectedTrailer.curb_weight,
+          deposit: selectedTrailer.deposit,
+          price_1: selectedTrailer.price_1,
+          price_2: selectedTrailer.price_2,
+          price_3: selectedTrailer.price_3,
+          status: selectedTrailer.status,
+        });
+      }
     }
   }, [data]);
 
-  if (isLoading || !trailer) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Загрузка...</Text>
-      </View>
-    );
-  }
+  const [updateTrailer, { isLoading }] = useUpdateTrailerMutation();
+
+  const onSubmit = async (data: TrailerFormInputs) => {
+    try {
+      await updateTrailer({ id: trailer!.id, ...data } as Trailer).unwrap();
+      alert("Данные успешно обновлены!");
+    } catch (error) {
+      console.error("Ошибка при обновлении данных:", error);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: trailer.name,
-        }}
-      />
-
-      {/* Название и кнопка загрузки */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{trailer.name}</Text>
-        <TouchableOpacity style={styles.downloadButton}>
-          <Text style={styles.downloadText}>Скачать договор на аренду</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Карусель изображений */}
-      <FlatList
-        data={trailer.images} // trailer.images — массив ссылок на изображения
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.image} />
-        )}
-        contentContainerStyle={styles.imageCarousel}
-      />
-
-      {/* Информация об аренде */}
-      <View style={styles.rentalInfo}>
-        <Text style={styles.rentalPrice}>800 ₽ / сутки</Text>
-        <Text style={styles.deposit}>Залог 3000 ₽</Text>
-        <View style={styles.rentalDuration}>
-          <TouchableOpacity style={styles.durationButton}>
-            <Text style={styles.durationText}>1-2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.durationButton}>
-            <Text style={styles.durationText}>3-6</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.durationButton}>
-            <Text style={styles.durationText}>от 7</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Кнопки действия */}
-      <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.reserveButton}>
-          <Text style={styles.reserveText}>Зарезервировать</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addToCartButton}>
-          <Text style={styles.addToCartText}>Добавить в корзину</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Характеристики */}
-      <View style={styles.specifications}>
-        <Text style={styles.specificationsTitle}>Характеристики</Text>
-        <Text style={styles.specificationItem}>- Высота: 870мм</Text>
-        <Text style={styles.specificationItem}>- Ширина: 1230мм</Text>
-      </View>
-    </ScrollView>
+    <FormProvider {...methods}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        style={styles.container}
+      >
+        <FormInput name="name" label="Название" />
+        <FormSelect
+          name="status"
+          label="Наличие прицепа"
+          options={[
+            { label: "В наличии ", value: "available" },
+            { label: "Зарезервирован", value: "reserved" },
+            { label: "Отсутствует", value: "unavailable" },
+          ]}
+        />
+        <FormInput name="height" label="Высота прицепа (в мм)" />
+        <FormInput name="width" label="Ширина прицепа (в мм)" />
+        {/* <FormInput name="year_of_production" label="Год выпуска" /> */}
+        <FormInput name="color" label="Цвет прицепа" />
+        <FormInput name="max_weight" label="Максимальная масса (кг)" />
+        <FormInput
+          name="curb_weight"
+          label="Масса в снаряженном состоянии (кг)"
+        />
+        <FormInput name="deposit" label="Залог (₽)" />
+        <FormInput name="price_1" label="Цена от 1 до 2 суток (₽)" />
+        <FormInput name="price_2" label="Цена от 3 до 6 суток (₽)" />
+        <FormInput name="price_3" label="Цена от 7 суток (₽)" />
+        <FormInput name="description" label="Описание" />ы
+        <Button
+          mode="contained"
+          onPress={methods.handleSubmit(onSubmit)}
+          loading={isLoading}
+          style={styles.button}
+        >
+          Отправить
+        </Button>
+      </ScrollView>
+    </FormProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
+  error: {
+    color: "red",
+    fontSize: 12,
   },
-  downloadButton: {
-    alignSelf: "flex-start",
-  },
-  downloadText: {
-    color: "#007BFF",
-    fontSize: 14,
-  },
-  imageCarousel: {
+  button: {
     marginTop: 16,
-    paddingHorizontal: 16,
-  },
-  image: {
-    width: 250,
-    height: 150,
-    borderRadius: 8,
-    marginRight: 16,
-  },
-  rentalInfo: {
-    padding: 16,
-  },
-  rentalPrice: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  deposit: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 16,
-  },
-  rentalDuration: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  durationButton: {
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    alignItems: "center",
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  durationText: {
-    fontSize: 14,
-  },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 16,
-    paddingHorizontal: 16,
-  },
-  reserveButton: {
-    backgroundColor: "#FF5722",
-    padding: 14,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: "center",
-    marginRight: 8,
-  },
-  reserveText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  addToCartButton: {
-    backgroundColor: "#F5F5F5",
-    padding: 14,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: "center",
-    marginLeft: 8,
-  },
-  addToCartText: {
-    color: "#333",
-    fontSize: 16,
-  },
-  specifications: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-  },
-  specificationsTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  specificationItem: {
-    fontSize: 16,
-    marginBottom: 4,
   },
 });

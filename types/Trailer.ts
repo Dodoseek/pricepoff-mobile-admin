@@ -6,7 +6,7 @@ interface Trailer {
   description: string;
   height: number;
   width: number;
-  year_of_production: string;
+  year_of_production: Date;
   color: string;
   max_weight: number;
   curb_weight: number;

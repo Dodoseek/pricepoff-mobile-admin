@@ -3,19 +3,11 @@ import { useGetTrailersQuery } from "@/api/trailersApi";
 import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import TrailerCard from "./TrailerCard";
 import { ActivityIndicator, MD2Colors, Text } from "react-native-paper";
+import { useRefresh } from "@/hooks/useRefresh";
 
 export default function TrailerList() {
   const { data = [], isLoading, refetch } = useGetTrailersQuery();
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      await refetch();
-    } finally {
-      setRefreshing(false);
-    }
-  }, [refetch]);
+  const { refreshing, onRefresh } = useRefresh(refetch);
 
   if (isLoading && !refreshing) {
     return <ActivityIndicator animating={true} color={MD2Colors.red800} />;

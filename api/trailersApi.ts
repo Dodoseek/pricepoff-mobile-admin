@@ -45,8 +45,16 @@ const extendedApi = api.injectEndpoints({
         websocket.close();
       },
     }),
+    updateTrailer: builder.mutation<void, Trailer>({
+      query: ({ id, ...data }) => ({
+        url: `trailers/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Trailers", id }],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetTrailersQuery } = extendedApi;
+export const { useGetTrailersQuery, useUpdateTrailerMutation } = extendedApi;

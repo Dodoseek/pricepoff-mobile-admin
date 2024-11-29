@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "pricepoff-mobile",
-    "slug": "pricepoff-mobile",
+    "name": "pricepoff-mobile-admin",
+    "slug": "pricepoff-mobile-admin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
