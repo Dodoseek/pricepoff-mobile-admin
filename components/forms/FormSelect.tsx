@@ -8,6 +8,7 @@ interface FormSelectProps {
   label: string;
   options: Array<{ label: string; value: string | number }>;
   placeholder?: string;
+  defaultValue?: string | number | null;
 }
 
 const FormSelect: React.FC<FormSelectProps> = ({
@@ -15,6 +16,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   label,
   options,
   placeholder = label,
+  defaultValue = null,
 }) => {
   const {
     control,
@@ -24,7 +26,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string | number | null>(
-    null
+    defaultValue
   );
   const [anchorLayout, setAnchorLayout] = useState({ width: 0, height: 0 });
 
@@ -45,6 +47,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
       <Controller
         name={name}
         control={control}
+        defaultValue={defaultValue}
         render={({ field: { onChange, value } }) => (
           <>
             <Menu

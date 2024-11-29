@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button } from "react-native-paper";
+import { ActivityIndicator, Button, MD2Colors } from "react-native-paper";
 import {
   useGetTrailersQuery,
   useUpdateTrailerMutation,
@@ -58,7 +58,6 @@ export default function TrailerForm() {
   const [updateTrailer, { isLoading }] = useUpdateTrailerMutation();
 
   const onSubmit = async (data: TrailerFormInputs) => {
-    console.error(data);
     try {
       await updateTrailer({ id: trailer!.id, ...data } as Trailer).unwrap();
       alert("Данные успешно обновлены!");
@@ -66,6 +65,20 @@ export default function TrailerForm() {
       console.error("Ошибка при обновлении данных:", error);
     }
   };
+
+  if (isLoadingGet || !trailer) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator animating={true} color={MD2Colors.red800} />
+      </View>
+    );
+  }
 
   return (
     <FormProvider {...methods}>
@@ -83,6 +96,7 @@ export default function TrailerForm() {
         <FormSelect
           name="status"
           label="Наличие прицепа"
+          defaultValue={trailer?.status}
           options={[
             { label: "В наличии ", value: "available" },
             { label: "Зарезервирован", value: "reserved" },
