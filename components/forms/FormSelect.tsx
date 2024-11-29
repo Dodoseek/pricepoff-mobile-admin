@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useFormContext, Controller } from "react-hook-form";
-import { Dropdown } from "react-native-element-dropdown";
-import { useTheme } from "react-native-paper";
+import { Menu, Button, useTheme } from "react-native-paper";
 
 interface FormSelectProps {
   name: string;
@@ -15,44 +14,96 @@ const FormSelect: React.FC<FormSelectProps> = ({
   name,
   label,
   options,
-  placeholder = "Выберите значение",
+  placeholder = label,
 }) => {
   const {
     control,
     formState: { errors },
   } = useFormContext();
 
-  const [isFocused, setIsFocused] = useState(false);
   const { colors } = useTheme();
+  const [visible, setVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<string | number | null>(
+    null
+  );
+  const [anchorLayout, setAnchorLayout] = useState({ width: 0, height: 0 });
+
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  const handleAnchorLayout = (event: any) => {
+    const { width, height } = event.nativeEvent.layout;
+    setAnchorLayout({ width, height });
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, isFocused && { color: colors.primary }]}>
-        {label}
-      </Text>
+      <Text style={styles.label}>{label}</Text>
+
       <Controller
         name={name}
         control={control}
         render={({ field: { onChange, value } }) => (
-          <Dropdown
-            style={[
-              styles.input,
-              errors[name] && styles.errorBorder,
-              isFocused && {
-                borderBottomColor: colors.primary,
-                borderBottomWidth: 2,
-              },
-            ]}
-            data={options}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={placeholder}
-            value={value}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onChange={(item) => onChange(item.value)}
-          />
+          <>
+            <Menu
+              contentStyle={{
+                backgroundColor: "white",
+              }}
+              visible={visible}
+              onDismiss={closeMenu}
+              anchor={
+                <TouchableOpacity
+                  onLayout={handleAnchorLayout}
+                  onPress={openMenu}
+                >
+                  <View
+                    style={[
+                      styles.input,
+                      errors[name] && styles.errorBorder,
+                      visible && {
+                        borderColor: colors.primary,
+                        borderBottomWidth: 2,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.inputText]}>
+                      {selectedValue
+                        ? options.find(
+                            (option) => option.value === selectedValue
+                          )?.label
+                        : placeholder}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              }
+              anchorPosition="bottom"
+            >
+              {options.map((option) => (
+                <Menu.Item
+                  title={option.label}
+                  style={[
+                    selectedValue === option.value && {
+                      backgroundColor: colors.primary,
+                    },
+                    {
+                      borderColor: colors.primary,
+                      width: anchorLayout.width,
+                      maxWidth: "auto",
+                    },
+                  ]}
+                  key={option.value}
+                  onPress={() => {
+                    setSelectedValue(option.value);
+                    onChange(option.value);
+                    closeMenu();
+                  }}
+                  titleStyle={[
+                    selectedValue === option.value && styles.selectedText,
+                  ]}
+                />
+              ))}
+            </Menu>
+          </>
         )}
       />
       {errors[name] && (
@@ -86,12 +137,23 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
   },
+  inputText: {
+    fontSize: 16,
+    color: "black",
+  },
   errorBorder: {
     borderBottomColor: "red",
   },
   error: {
     color: "red",
     fontSize: 12,
+  },
+  menuItem: {
+    width: "100%",
+  },
+  selectedText: {
+    color: "white",
+    fontSize: 16,
   },
 });
 

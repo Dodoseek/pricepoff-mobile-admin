@@ -7,9 +7,15 @@ interface FormInputProps {
   name: string;
   label: string;
   keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
+  multiline?: boolean;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ name, label, keyboardType }) => {
+const FormInput: React.FC<FormInputProps> = ({
+  name,
+  label,
+  keyboardType,
+  multiline = false,
+}) => {
   const theme = useTheme();
   const {
     control,
@@ -31,6 +37,7 @@ const FormInput: React.FC<FormInputProps> = ({ name, label, keyboardType }) => {
             style={styles.input}
             underlineColor="#ccc"
             activeUnderlineColor={theme.colors.primary}
+            multiline={multiline}
           />
         )}
       />

@@ -9,7 +9,7 @@ import {
 } from "@/api/trailersApi";
 import { trailerSchema } from "@/schemas/TrailerSchema";
 import * as yup from "yup";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useRefresh } from "@/hooks/useRefresh";
 import FormInput from "@/components/forms/FormInput";
 import FormSelect from "@/components/forms/FormSelect";
@@ -71,7 +71,11 @@ export default function TrailerForm() {
         }
         style={styles.container}
       >
-        <FormInput name="name" label="Название" />
+        <Stack.Screen
+          options={{
+            title: trailer?.name,
+          }}
+        />
         <FormSelect
           name="status"
           label="Наличие прицепа"
@@ -81,6 +85,7 @@ export default function TrailerForm() {
             { label: "Отсутствует", value: "unavailable" },
           ]}
         />
+        <FormInput name="name" label="Название" />
         <FormInput name="height" label="Высота прицепа (в мм)" />
         <FormInput name="width" label="Ширина прицепа (в мм)" />
         {/* <FormInput name="year_of_production" label="Год выпуска" /> */}
@@ -94,7 +99,7 @@ export default function TrailerForm() {
         <FormInput name="price_1" label="Цена от 1 до 2 суток (₽)" />
         <FormInput name="price_2" label="Цена от 3 до 6 суток (₽)" />
         <FormInput name="price_3" label="Цена от 7 суток (₽)" />
-        <FormInput name="description" label="Описание" />ы
+        <FormInput name="description" label="Описание" multiline={true} />
         <Button
           mode="contained"
           onPress={methods.handleSubmit(onSubmit)}
