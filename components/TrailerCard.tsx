@@ -2,7 +2,14 @@ import { StyleSheet, View } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 
-import { Button, Card, Text, Avatar, useTheme } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Text,
+  Avatar,
+  useTheme,
+  TouchableRipple,
+} from "react-native-paper";
 
 export default function TrailerCard({ trailer }: { trailer: Trailer }) {
   const theme = useTheme();
@@ -44,20 +51,29 @@ export default function TrailerCard({ trailer }: { trailer: Trailer }) {
 
   return (
     <Card style={styles.card}>
-      <Card.Cover
-        style={[
-          styles.cover,
-          { borderTopLeftRadius: 15, borderTopRightRadius: 15 },
-        ]}
-        source={{ uri: "https://picsum.photos/700" }}
-      />
-      <Card.Title title={trailer.name} />
-      <Card.Content style={{ marginBottom: 20 }}>
-        <View style={[styles.statusBox, { marginBottom: 10 }]}>
-          {getStatus()}
-        </View>
-        <Text>Цена: от {trailer.price_3} ₽/сутки</Text>
-      </Card.Content>
+      <TouchableRipple
+        onPress={() =>
+          router.push({
+            pathname: "/details/[id]",
+            params: { id: trailer.id },
+          })
+        }
+        rippleColor="rgba(0, 0, 0, .32)"
+      >
+        <>
+          <Card.Cover
+            style={{ borderRadius: 0 }}
+            source={{ uri: "https://picsum.photos/700" }}
+          />
+          <Card.Title title={trailer.name} />
+          <Card.Content style={{ marginBottom: 20 }}>
+            <View style={[styles.statusBox, { marginBottom: 10 }]}>
+              {getStatus()}
+            </View>
+            <Text>Цена: от {trailer.price_3} ₽/сутки</Text>
+          </Card.Content>
+        </>
+      </TouchableRipple>
       <Button
         onPress={() =>
           router.push({
@@ -93,8 +109,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: "100%",
     borderRadius: 15,
-  },
-  cover: {
-    borderRadius: 0,
+    overflow: "hidden",
   },
 });

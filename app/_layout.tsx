@@ -1,6 +1,7 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import {
   MD3LightTheme as DefaultTheme,
+  IconButton,
   PaperProvider,
 } from "react-native-paper";
 import { StyleSheet, Image, View, StatusBar } from "react-native";
@@ -20,6 +21,8 @@ const theme = {
 };
 
 export default function RootLayout() {
+  const router = useRouter();
+
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("white");
     NavigationBar.setButtonStyleAsync("dark");
@@ -40,6 +43,20 @@ export default function RootLayout() {
                   <Image source={logo} style={styles.logo} />
                 </View>
               ),
+              headerRight: () => (
+                <IconButton
+                  icon="plus"
+                  size={30}
+                  onPress={() => router.push("/details/create")}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="details/create"
+            options={{
+              title: "Создать прицеп",
+              headerTitleAlign: "center",
             }}
           />
         </Stack>

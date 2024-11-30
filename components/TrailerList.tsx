@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { useGetTrailersQuery } from "@/api/trailersApi";
 import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import TrailerCard from "./TrailerCard";

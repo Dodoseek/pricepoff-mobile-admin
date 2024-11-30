@@ -1,5 +1,4 @@
 import { api } from "@/api/api";
-// TODO: Разобраться с providesTags и invalidatesTags
 const extendedApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getTrailers: builder.query<Trailer[], void>({
@@ -53,8 +52,35 @@ const extendedApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Trailers", id }],
     }),
+    deleteTrailer: builder.mutation<Trailer, number | string>({
+      query: (id) => ({
+        url: `trailers/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [{ type: "Trailers", id }],
+    }),
+    createTrailer: builder.mutation<Trailer, Trailer>({
+      query: (trailer) => ({
+        url: "trailers",
+        method: "POST",
+        body: trailer,
+      }),
+      invalidatesTags: [{ type: "Trailers" }],
+    }),
+    getTrailerById: builder.query<Trailer, number | string>({
+      query: (trailerId) => `trailers/${trailerId}`,
+      providesTags: (result, error, trailerId) => [
+        { type: "Trailers", id: trailerId },
+      ],
+    }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
-export const { useGetTrailersQuery, useUpdateTrailerMutation } = extendedApi;
+export const {
+  useGetTrailersQuery,
+  useUpdateTrailerMutation,
+  useDeleteTrailerMutation,
+  useCreateTrailerMutation,
+  useGetTrailerByIdQuery,
+} = extendedApi;
