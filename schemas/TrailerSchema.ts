@@ -70,4 +70,19 @@ export const trailerSchema = yup.object().shape({
     .oneOf(["available", "reserved", "unavailable"], "Некорректный статус")
     .required("Статус обязателен")
     .typeError("Ошибка типа данных"),
+  images: yup
+    .array(
+      yup.object().shape({
+        file_path: yup
+          .string()
+          .required("Путь к файлу обязателен")
+          .typeError("Ошибка типа данных"),
+        is_main: yup
+          .boolean()
+          .required("Флаг главного изображения обязателен")
+          .typeError("Ошибка типа данных"),
+      })
+    )
+    .min(1, "Необходимо выбрать хотя бы одно изображение")
+    .typeError("Ошибка типа данных"),
 });

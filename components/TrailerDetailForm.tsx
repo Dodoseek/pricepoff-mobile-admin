@@ -16,6 +16,7 @@ import FormDatePicker from "@/components/forms/FormDatePicker";
 import showAlert from "@/services/showAlert";
 import { useRouter } from "expo-router";
 import TrailerDeleteDialog from "./TrailerDeleteDialog";
+import FormImageTrailer from "./forms/FormImageTrailer";
 
 type TrailerFormInputs = yup.InferType<typeof trailerSchema>;
 
@@ -64,6 +65,10 @@ export default function TrailerForm({
     };
 
     try {
+      if (data.images && data.images.length > 0) {
+        trailer_data.images = data.images;
+      }
+      console.error(trailer_data);
       const trailerAction = trailer_data.id ? updateTrailer : createTrailer;
       const actionMessage = trailer_data.id ? "обновлены" : "сохранены";
 
@@ -133,6 +138,7 @@ export default function TrailerForm({
           keyboardType="numeric"
         />
         <FormInput name="description" label="Описание" multiline={true} />
+        <FormImageTrailer name="images" label="Выбор изображений" />
         <Button
           mode="contained"
           onPress={methods.handleSubmit(onSubmit)}
