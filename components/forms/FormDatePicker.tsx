@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { View, StyleSheet, Pressable, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTheme, HelperText, TextInput } from "react-native-paper";
 
@@ -25,6 +19,7 @@ const FormDatePicker: React.FC<FormDatePickerProps> = ({ name, label }) => {
 
   const showPicker = () => setPickerVisible(true);
   const hidePicker = () => setPickerVisible(false);
+  const togglePicker = () => setPickerVisible(!isPickerVisible);
 
   const formatDate = (date: Date | null) => {
     if (!date) return "";
@@ -42,7 +37,7 @@ const FormDatePicker: React.FC<FormDatePickerProps> = ({ name, label }) => {
         control={control}
         render={({ field: { onChange, value } }) => (
           <>
-            <TouchableOpacity onPress={showPicker}>
+            <Pressable onPress={togglePicker}>
               <TextInput
                 label={label}
                 value={value ? formatDate(new Date(value)) : ""}
@@ -51,15 +46,16 @@ const FormDatePicker: React.FC<FormDatePickerProps> = ({ name, label }) => {
                 error={!!errors[name]}
                 underlineColor="#ccc"
                 activeUnderlineColor={theme.colors.primary}
+                pointerEvents="none"
                 right={<TextInput.Icon icon="calendar" />}
               />
-            </TouchableOpacity>
+            </Pressable>
 
             {isPickerVisible && (
               <DateTimePicker
                 value={value ? new Date(value) : new Date()}
                 mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
+                display={Platform.OS === "ios" ? "inline" : "default"}
                 onChange={(event, selectedDate) => {
                   hidePicker();
                   if (selectedDate) onChange(selectedDate.toISOString());
